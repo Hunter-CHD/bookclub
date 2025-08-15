@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Book Club Search</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f3f0e9;
+      padding: 20px;
+      max-width: 1100px;
+      margin: auto;
+      color: #333;
+    }
+    h1 {
+      text-align: center;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+    textarea {
+      width: 100%;
+      height: 100px;
+      margin-bottom: 10px;
+      padding: 10px;
+      font-size: 14px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      background: #fff;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 14px;
+      background: #8b5e3c;
+      border: none;
+      color: white;
+      cursor: pointer;
+      border-radius: 6px;
+      font-weight: 500;
+    }
+    button:disabled {
+      background: #c7b9ae;
+      cursor: not-allowed;
+    }
+    .results {
+      display: flex;
+      flex-direction: column;
+      gap: 25px;
+      margin-top: 25px;
+    }
+    .book-card {
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+      display: grid;
+      grid-template-columns: 1fr 4fr;
+      gap:1rem;
+      padding: 15px;
+      transition: transform 0.15s ease;
+    }
+    .book-card:hover {
+      transform: translateY(-4px);
+    }
+    .book-card img {
+      max-width: 140px;
+      height: auto;
+      border-radius: 4px;
+      margin-bottom: 10px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+      align-self: center;
+    }
+    .book-card h3 {
+      font-size: 15px;
+      margin: 0 0 5px;
+      font-weight: 600;
+      text-align: center;
+    }
+    .book-card p {
+      margin: 2px 0;
+      font-size: 13px;
+      color: #555;
+      text-align: center;
+    }
+    .description {
+      font-size: 13px;
+      margin-top: 8px;
+      text-align: left;
+    }
+    .shelf {
+      border-top: 5px solid #d2b48c;
+      padding-top: 15px;
+    }
+  </style>
+</head>
+<body>
+
+<h1>Book Club Search</h1>
+<textarea id="bookList" placeholder="Enter book titles, one per line..."></textarea>
+<br>
+<button id="searchBtn">Search</button>
+
+<div class="results shelf" id="results"></div>
+
+<script>
+  function cleanCoverUrl(url) {
+    if (!url) return null;
+    return url.replace(/&edge=curl.*$/, "");
+  }
+
+  document.getElementById("searchBtn").addEventListener("click", async () => {
+    const resultsContainer = document.getElementById("results");
+    resultsContainer.innerHTML = "";
+    const bookTitles = document.getElementById("bookList").value
+      .split("\n")
+      .map(t => t.trim())
+      .filter(t => t.length > 0);
+
+    if (bookTitles.length === 0) return;
+
+    document.getElementById("searchBtn").disabled = true;
+
+    for (let title of bookTitles) {
+      try {
+        const res = await fetch(
+          `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(title)}&maxResults=1`
+        );
+        const data = await res.json();
+        if (data.items && data.items.length > 0) {
+          const book = data.items[0].volumeInfo;
+          const coverUrl = cleanCoverUrl(book.imageLinks?.thumbnail) || 'https://via.placeholder.com/128x193?text=No+Cover';
+          const description = book.description || "No description available.";
+
+          const card = document.createElement("div");
+          card.className = "book-card";
+          card.innerHTML = `
+            <div style="display:flex;flex-direction:column;align-items:center">
+                <img src="${coverUrl}" alt="Cover">
+                <h3>${book.title || "No title"}</h3>
+                <p><strong>Author:</strong> ${book.authors ? book.authors.join(", ") : "Unknown"}</p>
+                <p><strong>Published:</strong> ${book.publishedDate || "Unknown"}</p>
+            </div>
+            <div class="description">${description}</div>
+          `;
+          const desc = card.querySelector(".description");
+
+          resultsContainer.appendChild(card);
+        } else {
+          const card = document.createElement("div");
+          card.className = "book-card";
+          card.innerHTML = `
+            <img src="https://via.placeholder.com/128x193?text=Not+Found" alt="No Result">
+            <h3>${title}</h3>
+            <p>No results found</p>
+          `;
+          resultsContainer.appendChild(card);
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    document.getElementById("searchBtn").disabled = false;
+  });
+</script>
+
+</body>
+</html>
