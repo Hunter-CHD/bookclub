@@ -1,5 +1,12 @@
 // Replace with your published CSV link
-const sheetURL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSsBpRJk3z9m1ANMXBrynWofvBSgdJaVnKUgYttD8K-dR_pqVQY0EnGNwt0cGDtH4zakSm_DjOXM8jA/pub?output=csv';
+
+const THEME_RECS = "427527301";
+const PREVIOUS_SUGGESTIONS = "676733154";
+const PREVIOUSLY_READ = "0";
+const CURRENTLY_READING = "968818854";
+const UP_NEXT = "111498079";
+
+const sheetURL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSsBpRJk3z9m1ANMXBrynWofvBSgdJaVnKUgYttD8K-dR_pqVQY0EnGNwt0cGDtH4zakSm_DjOXM8jA/pub?gid=' + PREVIOUSLY_READ + '&single=true&output=csv';
 
 async function loadBooks() {
   try {
