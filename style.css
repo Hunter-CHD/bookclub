@@ -1,0 +1,28 @@
+body {
+  font-family: sans-serif;
+  max-width: 700px;
+  margin: auto;
+  padding: 1rem;
+  background: #f4f4f4;
+}
+
+h1 {
+  text-align: center;
+}
+
+.book-card {
+  background: white;
+  padding: 1rem;
+  margin-bottom: 0.75rem;
+  border-radius: 6px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.book-card h2 {
+  margin: 0;
+}
+
+.book-card p {
+  margin: 0.25rem 0 0;
+  color: #555;
+}
